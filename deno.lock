@@ -5,7 +5,8 @@
     "jsr:@std/dotenv@*": "0.225.5",
     "jsr:@std/dotenv@~0.225.6": "0.225.6",
     "jsr:@std/internal@^1.0.12": "1.0.12",
-    "npm:graphql-yoga@^3.7.3": "3.9.1_graphql@16.12.0_@envelop+core@3.0.6"
+    "npm:graphql-yoga@^3.7.3": "3.9.1_graphql@16.12.0_@envelop+core@3.0.6",
+    "npm:vercel-dev-builder@^0.0.6": "0.0.6"
   },
   "jsr": {
     "@std/assert@1.0.19": {
@@ -262,6 +263,9 @@
     "value-or-promise@1.0.12": {
       "integrity": "sha512-Z6Uz+TYwEqE7ZN50gwn+1LCVo9ZVrpxRPOhOLnncYkY1ZzOYtrX8Fwf/rFktZ8R5mJms6EZf5TqNOMeZmnPq9Q=="
     },
+    "vercel-dev-builder@0.0.6": {
+      "integrity": "sha512-h0BQB2m1LFtm2lNQJynVBSoEotTmkJAs3R2abfaBzLd1zXN/tCPJIEOIOMLPmat64NkXIzK7zxZAJmrVkCtQ3g=="
+    },
     "web-streams-polyfill@3.3.3": {
       "integrity": "sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw=="
     },
@@ -283,7 +287,8 @@
     "dependencies": [
       "jsr:@std/assert@1",
       "jsr:@std/dotenv@~0.225.6",
-      "npm:graphql-yoga@^3.7.3"
+      "npm:graphql-yoga@^3.7.3",
+      "npm:vercel-dev-builder@^0.0.6"
     ]
   }
 }
