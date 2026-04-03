@@ -257,7 +257,15 @@ const yoga = createYoga({
       }
     },
   }),
-  graphqlEndpoint: '/api/graphql'
+  graphqlEndpoint: '/api/graphql',
+  cors: {
+    origin: ['http://localhost:3000', 'http://localhost:8081'
+      // , '*'
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }
 })
 
 const port = process.env.PORT || 4000
