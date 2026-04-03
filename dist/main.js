@@ -1,13 +1,8 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = handler;
-const graphql_yoga_1 = require("graphql-yoga");
-const xmlToJson_1 = __importDefault(require("./xmlToJson"));
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
+import { createSchema, createYoga } from 'graphql-yoga';
+import xmlToJson from './xmlToJson.js';
+import dotenv from 'dotenv';
+import { createServer } from 'http';
+dotenv.config();
 const schema = `
   type BusArrivalInfo {
     arrmsg1: String
@@ -107,7 +102,7 @@ const root = {
             const url = `http://ws.bus.go.kr/api/rest/arrive/getArrInfoByRouteAll?serviceKey=${apiKey}&busRouteId=${routeId}`;
             const response = await fetch(url);
             const xmlData = await response.text();
-            const jsonData = (0, xmlToJson_1.default)(xmlData);
+            const jsonData = xmlToJson(xmlData);
             // console.log('Fetched Seoul bus data:', jsonData.msgBody.itemList[0]);
             // Transform XML data to match GraphQL schema
             return {
@@ -223,9 +218,9 @@ const root = {
     //   return message;
     // }
 };
-function handler(req, res) {
-    const yoga = (0, graphql_yoga_1.createYoga)({
-        schema: (0, graphql_yoga_1.createSchema)({
+export default function handler(req, res) {
+    const yoga = createYoga({
+        schema: createSchema({
             typeDefs: schema,
             resolvers: {
                 Query: {
@@ -242,3 +237,25 @@ function handler(req, res) {
     });
     return yoga(req, res);
 }
+// Start server
+const yoga = createYoga({
+    schema: createSchema({
+        typeDefs: schema,
+        resolvers: {
+            Query: {
+                ...root,
+            },
+            Mutation: {
+                setMessage: ({ message }) => {
+                    return message;
+                }
+            }
+        },
+    }),
+    graphqlEndpoint: '/api/graphql'
+});
+const port = process.env.PORT || 4000;
+const server = createServer(yoga);
+server.listen(port, () => {
+    console.log(`🚀 GraphQL Server ready at http://localhost:${port}/api/graphql`);
+});

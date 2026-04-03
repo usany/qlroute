@@ -1,6 +1,7 @@
 import { createSchema, createYoga } from 'graphql-yoga'
-import xmlToJson from './xmlToJson'
+import xmlToJson from './xmlToJson.js'
 import dotenv from 'dotenv'
+import { createServer } from 'http'
 
 dotenv.config()
 
@@ -240,3 +241,28 @@ export default function handler(req, res) {
 
   return yoga(req, res)
 }
+
+// Start server
+const yoga = createYoga({
+  schema: createSchema({
+    typeDefs: schema,
+    resolvers: {
+      Query: {
+        ...root,
+      },
+      Mutation: {
+        setMessage: ({ message }) => {
+          return message;
+        }
+      }
+    },
+  }),
+  graphqlEndpoint: '/api/graphql'
+})
+
+const port = process.env.PORT || 4000
+const server = createServer(yoga)
+
+server.listen(port, () => {
+  console.log(`🚀 GraphQL Server ready at http://localhost:${port}/api/graphql`)
+})

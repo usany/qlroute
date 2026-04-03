@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = xmlToJson;
-function xmlToJson(xmlString) {
+export default function xmlToJson(xmlString) {
     // Simple XML to JSON parser using regex and string manipulation
     function parseElement(xml) {
         const result = {};
