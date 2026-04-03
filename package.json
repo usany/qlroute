@@ -4,9 +4,9 @@
   "description": "Bus arrival API with GraphQL",
   "main": "api/index.js",
   "scripts": {
-    "dev": "node main.ts",
-    "build": "echo 'No build step required'",
-    "start": "node main.ts"
+    "dev": "tsc && node dist/main.js",
+    "build": "tsc",
+    "start": "node dist/main.js"
   },
   "dependencies": {
     "graphql-yoga": "^3.7.3",
@@ -15,7 +15,6 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0",
-    "ts-node": "^10.9.0"
+    "typescript": "^5.0.0"
   }
 }

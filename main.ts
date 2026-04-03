@@ -1,5 +1,5 @@
 import { createSchema, createYoga } from 'graphql-yoga'
-import xmlToJson from './xmlToJson.ts'
+import xmlToJson from './xmlToJson'
 import dotenv from 'dotenv'
 
 dotenv.config()
