@@ -236,7 +236,7 @@ export default function handler(req, res) {
         }
       },
     }),
-    graphqlEndpoint: '/api/graphql'
+    graphqlEndpoint: '/graphql'
   })
 
   return yoga(req, res)
