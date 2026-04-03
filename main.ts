@@ -1,14 +1,9 @@
 import { createSchema, createYoga } from 'graphql-yoga'
 import xmlToJson from './xmlToJson.ts'
-import { load } from "@std/dotenv";
-// import { load } from "jsr:@std/dotenv";
-const env = await load()
-// const env = await load({
-  // optional: choose a specific path (defaults to ".env")
-  // envPath: ".env.local",
-  // optional: also export to the process environment (so Deno.env can read it)
-  // export: true,
-// });
+import dotenv from 'dotenv'
+
+dotenv.config()
+
 const schema = `
   type BusArrivalInfo {
     arrmsg1: String
@@ -104,7 +99,7 @@ const schema = `
 const root = {  
   seoulBusArrival: async (_: any, { routeId }) => {
     try {
-      const apiKey = env.USERID;
+      const apiKey = process.env.USERID;
       const url = `http://ws.bus.go.kr/api/rest/arrive/getArrInfoByRouteAll?serviceKey=${apiKey}&busRouteId=${routeId}`;
       const response = await fetch(url);
       const xmlData = await response.text();
@@ -146,7 +141,7 @@ const root = {
 
   gyeonggiBusArrival: async (_: any, { stationId }) => {
     try {
-      const apiKey = env.USERID;
+      const apiKey = process.env.USERID;
       const url = `https://apis.data.go.kr/6410000/busarrivalservice/v2/getBusArrivalListv2?serviceKey=${apiKey}&stationId=${stationId}&format=json`;
       const data = await fetch(url);
       const res = await data.json();
@@ -174,7 +169,7 @@ const root = {
   gyeonggiBusRoute: async (_: any, { routeId }) => {
     console.log(routeId)
     try {
-      const apiKey = env.USERID;
+      const apiKey = process.env.USERID;
       const url = `https://apis.data.go.kr/6410000/busrouteservice/v2/getBusRouteInfoItemv2?serviceKey=${apiKey}&routeId=${routeId}&format=json`;
       const response = await fetch(url);
       const apiData = await response.json();
@@ -225,76 +220,23 @@ const root = {
   // }
 };
 
-const yoga = createYoga({
-  schema: createSchema({
-    typeDefs: schema,
-    resolvers: {
-      Query: {
-        ...root,
-  //       seoulBusArrival: async ({ routeId }: { routeId: String }) => {
-  //   try {
-  //     const apiKey = env.USERID;
-  //     const url = `http://ws.bus.go.kr/api/rest/arrive/getArrInfoByRouteAll?serviceKey=${apiKey}&busRouteId=${routeId}`;
-  //     const response = await fetch(url);
-  //     const xmlData = await response.text();
-  //     const jsonData = xmlToJson(xmlData);
-
-  //     return {
-  //       resultCode: jsonData.ServiceResult?.msgHeader?.resultCode || "ERROR",
-  //       resultMsg:
-  //         jsonData.ServiceResult?.msgHeader?.resultMsg ||
-  //         "Failed to fetch data",
-  //       itemList:
-  //         jsonData.ServiceResult?.msgBody?.itemList?.map((item) => ({
-  //           plateNo: item.plainNo || "",
-  //           remainTime: item.arrTime || "",
-  //           remainingStops: item.remainSeatCnt || "",
-  //           location: item.staNm || "",
-  //           lowPlate: item.lowPlate || "",
-  //           busType: item.busType || "",
-  //           isLast: item.isLast || "",
-  //           isFullFlag: item.isFullFlag || "",
-  //         })) || [],
-  //     };
-  //   } catch (error) {
-  //     console.error("Error fetching Seoul bus data:", error);
-  //     return {
-  //       resultCode: "ERROR",
-  //       resultMsg: "Error fetching Seoul bus data",
-  //       itemList: [],
-  //     };
-  //   }
-  // },
-
-  // gyeonggiBusArrival: async ({ stationId }: { stationId: String }) => {
-  //   try {
-  //     const apiKey = env.USERID;
-  //     const url = `https://apis.data.go.kr/6410000/busarrivalservice/v2/getBusArrivalListv2?serviceKey=${apiKey}&stationId=${stationId}&format=json`;
-  //     const response = await fetch(url);
-  //     const data = await response.json();
-  //     return data;
-  //   } catch (error) {
-  //     console.error("Error fetching Gyeonggi bus arrival data:", error);
-  //     return {
-  //       response: {
-  //         header: {
-  //           resultCode: "ERROR",
-  //           resultMsg: "Error fetching Gyeonggi bus arrival data",
-  //         },
-  //         body: {
-  //           items: {
-  //             item: [],
-  //           },
-  //         },
-  //       },
+export default function handler(req, res) {
+  const yoga = createYoga({
+    schema: createSchema({
+      typeDefs: schema,
+      resolvers: {
+        Query: {
+          ...root,
+        },
+        Mutation: {
+          setMessage: ({ message }) => {
+            return message;
+          }
+        }
       },
-    }
-  }),
-  graphqlEndpoint: '/graphql'
-})
- 
-Deno.serve(yoga, {
-  onListen({ hostname, port }) {
-    console.log(`Listening on http://${hostname}:${port}/${yoga.graphqlEndpoint}`)
-  }
-})
+    }),
+    graphqlEndpoint: '/api/graphql'
+  })
+
+  return yoga(req, res)
+}

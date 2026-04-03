@@ -1,0 +1,21 @@
+{
+  "name": "ql-unify",
+  "version": "1.0.0",
+  "description": "Bus arrival API with GraphQL",
+  "main": "api/index.js",
+  "scripts": {
+    "dev": "node main.ts",
+    "build": "echo 'No build step required'",
+    "start": "node main.ts"
+  },
+  "dependencies": {
+    "graphql-yoga": "^3.7.3",
+    "dotenv": "^16.3.1",
+    "graphql": "^16.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0"
+  }
+}
