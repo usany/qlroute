@@ -15,7 +15,7 @@ RUN deno install
 
 # WORKDIR /app
 # Expose port 5000
-EXPOSE 5000
+EXPOSE 8000
 
 # Run the Deno server
 CMD ["run", "--allow-net", "--allow-read", "--allow-env", "main.ts"]
