@@ -382,11 +382,6 @@ app.get('/', (req, res) => {
   res.send('GraphQL Server is running! Visit /graphql for the GraphQL playground.')
 })
 
-// You can now register your other endpoints that will not be affected by the GraphiQL CSP configuration
-app.get('/hello', (req, res) => {
-  res.send('Hello World!')
-})
-
 const port = process.env.PORT || 4000
 
 app.listen(port, () => {
