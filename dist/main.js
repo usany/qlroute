@@ -252,7 +252,7 @@ const yoga = createYoga({
             }
         },
     }),
-    graphqlEndpoint: '/api/graphql',
+    graphqlEndpoint: '/graphql',
     cors: {
         origin: ['http://localhost:3000', 'http://localhost:8081'
             // , '*'
