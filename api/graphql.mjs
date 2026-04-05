@@ -2,6 +2,7 @@ import { createSchema, createYoga } from 'graphql-yoga'
 import dotenv from 'dotenv'
 import express from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
 
 dotenv.config()
 
@@ -297,18 +298,10 @@ const root = {
   // }
 };
 
-// Create Express app with CORS
+// Create Express app with Helmet and CORS
 const app = express()
 
-// Configure CORS
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:8081', 'https://*.vercel.app'],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}))
-
-// Create GraphQL Yoga instance (without CORS config since Express handles it)
+// Create GraphQL Yoga instance
 const yoga = createYoga({
   schema: createSchema({
     typeDefs: schema,
@@ -326,8 +319,52 @@ const yoga = createYoga({
   graphqlEndpoint: '/graphql'
 })
 
-// Use GraphQL Yoga middleware
-app.all('/graphql', yoga)
+const yogaRouter = express.Router()
+
+// GraphiQL specific CSP configuration
+yogaRouter.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        'style-src': ["'self'", 'unpkg.com'],
+        'script-src': ["'self'", 'unpkg.com', "'unsafe-inline'"],
+        'img-src': ["'self'", 'raw.githubusercontent.com']
+      }
+    }
+  })
+)
+
+yogaRouter.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:8081', 'https://*.vercel.app'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}))
+
+yogaRouter.use(yoga)
+
+// By adding the GraphQL Yoga router before the global helmet middleware,
+// you can be sure that the global CSP configuration will not be applied to the GraphQL Yoga endpoint
+app.use(yoga.graphqlEndpoint, yogaRouter)
+
+// Add the global CSP configuration for the rest of your server
+app.use(helmet())
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:8081', 'https://*.vercel.app'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}))
+
+// Add a root route to fix "Cannot GET /" error
+app.get('/', (req, res) => {
+  res.send('GraphQL Server is running! Visit /graphql for the GraphQL playground.')
+})
+
+// You can now register your other endpoints that will not be affected by the GraphiQL CSP configuration
+app.get('/hello', (req, res) => {
+  res.send('Hello World!')
+})
 
 // Export the Express app for serverless deployment
 export default app
