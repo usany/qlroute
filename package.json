@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Bus arrival API with GraphQL",
   "type": "module",
-  "main": "api/index.js",
+  "main": "api/graphql.js",
   "scripts": {
     "dev": "node --env-file=.env main.ts",
     "preview": "node public/main.js"
