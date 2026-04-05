@@ -1,5 +1,7 @@
 import { createSchema, createYoga } from 'graphql-yoga'
 import dotenv from 'dotenv'
+import express from 'express'
+import cors from 'cors'
 
 dotenv.config()
 
@@ -295,6 +297,18 @@ const root = {
   // }
 };
 
+// Create Express app with CORS
+const app = express()
+
+// Configure CORS
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:8081', 'https://*.vercel.app'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}))
+
+// Create GraphQL Yoga instance (without CORS config since Express handles it)
 const yoga = createYoga({
   schema: createSchema({
     typeDefs: schema,
@@ -309,15 +323,11 @@ const yoga = createYoga({
       }
     },
   }),
-  graphqlEndpoint: '/graphql',
-  cors: {
-    origin: ['http://localhost:3000', 'http://localhost:8081', 'https://*.vercel.app'],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  }
+  graphqlEndpoint: '/graphql'
 })
 
-export default function handler(req, res) {
-  return yoga(req, res)
-}
+// Use GraphQL Yoga middleware
+app.all('/graphql', yoga)
+
+// Export the Express app for serverless deployment
+export default app
