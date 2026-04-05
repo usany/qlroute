@@ -1,6 +1,7 @@
 import { createSchema, createYoga } from 'graphql-yoga'
 import dotenv from 'dotenv'
-import { createServer } from 'http'
+import express from 'express'
+import cors from 'cors'
 
 dotenv.config()
 export function xmlToJson(xmlString: string) {
@@ -315,7 +316,18 @@ export default function handler(req, res) {
   return yoga(req, res)
 }
 
-// Start server
+// Start server with Express and CORS
+const app = express()
+
+// Configure CORS
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:8081'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}))
+
+// Create GraphQL Yoga instance
 const yoga = createYoga({
   schema: createSchema({
     typeDefs: schema,
@@ -330,20 +342,14 @@ const yoga = createYoga({
       }
     },
   }),
-  graphqlEndpoint: '/graphql',
-  cors: {
-    origin: ['http://localhost:3000', 'http://localhost:8081'
-      // , '*'
-    ],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  }
+  graphqlEndpoint: '/graphql'
 })
 
-const port = process.env.PORT || 8000
-const server = createServer(yoga)
+// Use GraphQL Yoga middleware
+app.all('/graphql', yoga)
 
-server.listen(port, () => {
-  console.log(`ready at http://localhost:${port}/graphql`)
+const port = process.env.PORT || 8000
+
+app.listen(port, () => {
+  console.log(`Server ready at http://localhost:${port}/graphql`)
 })
