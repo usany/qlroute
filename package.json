@@ -5,17 +5,18 @@
   "type": "module",
   "main": "api/index.js",
   "scripts": {
-    "dev": "node --env-file=.env main.ts",
+    "dev": "tsx --env-file=.env main.ts",
     "build": "tsc --outDir public && mkdir -p public",
     "preview": "node public/main.js"
   },
   "dependencies": {
-    "graphql-yoga": "^3.7.3",
     "dotenv": "^16.3.1",
-    "graphql": "^16.8.1"
+    "graphql": "^16.8.1",
+    "graphql-yoga": "^3.7.3"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.0.0"
   }
 }
