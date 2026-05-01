@@ -293,8 +293,9 @@ const yoga = createYoga({
   graphqlEndpoint: '/graphql'
 })
  
-Deno.serve(yoga, {
+Deno.serve({
+  port: 5000,
   onListen({ hostname, port }) {
     console.log(`Listening on http://${hostname}:${port}/${yoga.graphqlEndpoint}`)
   }
-})
+}, yoga)
